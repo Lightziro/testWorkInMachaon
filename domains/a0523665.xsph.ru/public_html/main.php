@@ -28,7 +28,6 @@ function getValueInArrayByPath(array $arraySearch, string $path)
 {
     foreach ($arraySearch as $key => $value)
     {
-        if ($key == $path) return $value;
 
         $pathSplit = explode('.', $path);
         $newArray = $arraySearch;
@@ -53,6 +52,7 @@ echo config('app.services.resizer.prefer_format') . '<br>';
 echo config("info.description") . '<br>';
 echo config("app.services.resizer.prefer_format") . '<br>';
 echo config("site_url") . '<br>';
+echo config("site_info", 'None') . '<br>';
 echo config("db.host") . '<br>';
 echo config("db.host", 'localhost') . '<br>';
 echo config("app.services.info.programType.type", 'PC') . '<br>';
