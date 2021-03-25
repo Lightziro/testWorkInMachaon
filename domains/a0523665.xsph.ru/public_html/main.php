@@ -1,4 +1,5 @@
 <?php
+header("Content-type: text/plain");
 /** Функция возвращает информацию о настройках
  *
  * @param string $optionName - наименование опции в виде пути до него(пример: путь.путь.путь)
@@ -7,15 +8,16 @@
  */
 function config(string $optionName, string $defaultValue = null)
 {
-    $newArray = require 'settings.php';
-    $configSearch = getValueInArrayByPath($newArray, $optionName);
-    if (!$configSearch)
-    {
-        return (!is_null($defaultValue))
-            ? $defaultValue
-            : new Exception('Не удалось найти данные по настройкам');
-    }
-    return $configSearch;
+	$newArray = require 'settings.php';
+	$configSearch = getValueInArrayByPath($newArray, $optionName);
+
+	if (!$configSearch['status'])
+	{
+		return (!is_null($defaultValue))
+			? $defaultValue
+			: new Exception('Не удалось найти данные по настройкам');
+	}
+	return $configSearch['output'];
 }
 
 /** Функция ищет в массиве заданный элемент через путь(пример: ключ.ключ.ключ)
@@ -26,34 +28,63 @@ function config(string $optionName, string $defaultValue = null)
  */
 function getValueInArrayByPath(array $arraySearch, string $path)
 {
-    foreach ($arraySearch as $key => $value)
-    {
+	$pathSplit = explode('.', $path);
+	if (empty($pathSplit) || $pathSplit == array())
+	{
+		return getOutputStatus(
+			isset($arraySearch[$path]) ? true : false,
+			$arraySearch[$path]
+		);
+	}
+	foreach ($arraySearch as $key => $value)
+	{
+		$lastElement = end($pathSplit);
+		$newArray = $arraySearch;
 
-        $pathSplit = explode('.', $path);
-        $newArray = $arraySearch;
-        foreach ($pathSplit as $pathElement)
-        {
-            if (!empty($newArray[$pathElement]) && is_array($newArray))
-            {
-                $newArray = $newArray[$pathElement];
-            }
-            elseif (is_array($value))
-            {
-                return getValueInArrayByPath($value, $path);
-            }
-        }
-        return (!empty($newArray) && !is_array($newArray)) ? $newArray : (bool)false;
-    }
+		foreach ($pathSplit as $pathElement)
+		{
+			if (isset($newArray[$lastElement]) && $lastElement == $pathElement)
+				return getOutputStatus(true, $newArray[$pathElement]);
+
+			if (isset($newArray[$pathElement]) && is_array($newArray)) {
+				$newArray = $newArray[$pathElement];
+			} elseif (is_array($value)) {
+				return getValueInArrayByPath($value, $path);
+			}
+		}
+
+		$statusReturn = !is_array($newArray) ? true : false;
+		return getOutputStatus($statusReturn, $newArray);
+	}
 }
+
+/** Функция для вывода возвратного значения из функции
+ *
+ * @param bool $type - тип выполненной функции
+ * @param null $content - информация которую требуется вывести из функции
+ * @return array
+ */
+function getOutputStatus(bool $type = true, $content = null)
+{
+	return ['status' => $type, 'output' => $content];
+}
+
 /*
  * Пример тестирования и вызова соответствующих конфигов элемента настройки
  */
-echo config('app.services.resizer.prefer_format') . '<br>';
-echo config("info.description") . '<br>';
-echo config("app.services.resizer.prefer_format") . '<br>';
-echo config("site_url") . '<br>';
-echo config("site_info", 'None') . '<br>';
-echo config("db.host") . '<br>';
-echo config("db.host", 'localhost') . '<br>';
-echo config("app.services.info.programType.type", 'PC') . '<br>';
-echo config("staffList.programmer.front-end.chief", 'false') . '<br>';
+print_r(config("dbs")) . PHP_EOL;
+print_r(config("app.services")) . PHP_EOL;
+print_r(config('app.services.resizer')) . PHP_EOL;
+print_r(config("staffList.programmer")) . PHP_EOL;
+print_r(config("staffList.programmer.back-end")) . PHP_EOL;
+print_r(config("info.programType")) . PHP_EOL;
+
+echo config('app.services.resizer.prefer_format') . PHP_EOL;
+echo config("info.description") . PHP_EOL;
+echo config("site_url") . PHP_EOL;
+echo config("site_info", 'None') . PHP_EOL;
+echo config("db.host") . PHP_EOL;
+echo config("db.host", 'localhost') . PHP_EOL;
+echo config("app.services.info.programType.type", 'PC') . PHP_EOL;
+echo config("staffList.programmer.front-end.chief", 'false') . PHP_EOL;
+
