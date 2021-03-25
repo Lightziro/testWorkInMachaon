@@ -8,16 +8,16 @@ header("Content-type: text/plain");
  */
 function config(string $optionName, string $defaultValue = null)
 {
-	$newArray = require 'settings.php';
+	$newArray = require "settings.php";
 	$configSearch = getValueInArrayByPath($newArray, $optionName);
 
-	if (!$configSearch['status'])
+	if (!$configSearch["status"])
 	{
 		return (!is_null($defaultValue))
 			? $defaultValue
-			: new Exception('Не удалось найти данные по настройкам');
+			: new Exception("Не удалось найти данные по настройкам");
 	}
-	return $configSearch['output'];
+	return $configSearch["output"];
 }
 
 /** Функция ищет в массиве заданный элемент через путь(пример: ключ.ключ.ключ)
@@ -28,7 +28,7 @@ function config(string $optionName, string $defaultValue = null)
  */
 function getValueInArrayByPath(array $arraySearch, string $path)
 {
-	$pathSplit = explode('.', $path);
+	$pathSplit = explode(".", $path);
 	if (empty($pathSplit) || $pathSplit == array())
 	{
 		return getOutputStatus(
@@ -48,8 +48,6 @@ function getValueInArrayByPath(array $arraySearch, string $path)
 
 			if (isset($newArray[$pathElement]) && is_array($newArray)) {
 				$newArray = $newArray[$pathElement];
-			} elseif (is_array($value)) {
-				return getValueInArrayByPath($value, $path);
 			}
 		}
 
@@ -66,7 +64,7 @@ function getValueInArrayByPath(array $arraySearch, string $path)
  */
 function getOutputStatus(bool $type = true, $content = null)
 {
-	return ['status' => $type, 'output' => $content];
+	return ["status" => $type, "output" => $content];
 }
 
 /*
@@ -74,17 +72,19 @@ function getOutputStatus(bool $type = true, $content = null)
  */
 print_r(config("dbs")) . PHP_EOL;
 print_r(config("app.services")) . PHP_EOL;
-print_r(config('app.services.resizer')) . PHP_EOL;
+print_r(config("app.services.resizer")) . PHP_EOL;
 print_r(config("staffList.programmer")) . PHP_EOL;
 print_r(config("staffList.programmer.back-end")) . PHP_EOL;
 print_r(config("info.programType")) . PHP_EOL;
 
-echo config('app.services.resizer.prefer_format') . PHP_EOL;
+echo config("app.services.resizer.prefer_format") . PHP_EOL;
+echo config("app.services.resizer.prefer_format") . PHP_EOL;
 echo config("info.description") . PHP_EOL;
 echo config("site_url") . PHP_EOL;
-echo config("site_info", 'None') . PHP_EOL;
+echo config("site_info", "None") . PHP_EOL;
 echo config("db.host") . PHP_EOL;
-echo config("db.host", 'localhost') . PHP_EOL;
-echo config("app.services.info.programType.type", 'PC') . PHP_EOL;
-echo config("staffList.programmer.front-end.chief", 'false') . PHP_EOL;
+echo config("db.host", "localhost") . PHP_EOL;
+echo config("app.services.info.programType.type", "PC") . PHP_EOL;
+echo config("staffList.programmer.front-end.chief", "false") . PHP_EOL;
+echo config("staffList.programmer.back-end.senior-developer.job.5.first_name", "None") . PHP_EOL;
 
